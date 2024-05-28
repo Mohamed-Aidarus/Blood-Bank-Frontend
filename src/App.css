@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+  }
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal-width columns */
+    gap: 20px; /* Space between grid items */
+  }
+  
+  
+  .container {
+    display: flex;
+  }
+  
+  main {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .sidebar {
+    background-color:  #6a040f;;
+    color: white;
+    border-bottom: 3px;
+    width: 200px;
+    height: 93vh;
+    transition: all 0.5s;
+  }
+  
+  .top_section {
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+  }
+  
+  .logo {
+    font-size: 40px;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .bars {
+    font-size: 30px;
+    margin-right: 20px;
+  }
+  
+  .link {
+    display: flex;
+    color: white;
+    padding: 20px 20px;
+    gap: 20px;
+    transition: all 0.5s;
+  }
+  
+  .link:hover {
+    background: #ede0d4;
+    border-radius: 15px;
+    color: black;
+  }
+  
+  .icon {
+    font-size: 20px;
+    margin-top: 6px;
+  }
+  
+  .linktext {
+    font-size: 20px;
+  }
+  
+  /* Employee page  */
+  
+  .title{
+    margin-bottom: 60px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #100453;
+    padding-left: 250px;
+  }
+  .h1_report{
+    padding-bottom: 20px;
+  }
+  .boton {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+
+  }
+  
+  .boton button {
+    margin-right: 100px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: blue;
+    color: #ffffff;
+    font-size: 30px;
+    cursor: pointer;
+  }
+  
+  .boton button:hover {
+    background-color: #27a300;
+    color: #ffffff;
+  }
+  .boton .btn_delete {
+    background-color: #ff0000;  
+  }
+  .boton .btn_delete:hover{
+    background-color: #8d0801;
+    color: white;
+  
+  
+  }
+
+
+
