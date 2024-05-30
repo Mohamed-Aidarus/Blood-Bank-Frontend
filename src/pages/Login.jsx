@@ -3,9 +3,15 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import logo from '../uploads/logo.png'; // Adjust the path to your logo file
+import { useLoginUserMutation } from '../store/api/UserSlice.js'; // Adjust the path to your user slice
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../Component/AuthProvider.jsx'; // Adjust the import path
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+  const { login } = useAuth();
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -16,11 +22,31 @@ const LoginForm = () => {
   const handleFocus = () => {
     document.getElementById("email").focus();
   };
-
+  
+  const initialValues = { email: '', password: '' }
   useEffect(() => {
     // Automatically focus on the email field when the component mounts
     handleFocus();
   }, []);
+
+  const handleSubmit = async (values) => {
+    try {
+      const response = await loginUser(values).unwrap();
+      console.log(response); // Display response in console
+      toast.success('Login successful!');
+      login(); // Update authentication state
+      navigate('/app'); // Adjust '/home' to the actual path where your home component is rendered
+    }catch (error) {
+      console.error("Error sending password reset email:", error);
+      if (error.status === 404) {
+        toast.error(error.data.message || "Email not found");
+        if (error.status === 400) {
+          toast.error(error.data.message || "Invalid password");
+      } else {
+        toast.error('Login failed. Please check your credentials.');
+      }}
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-[#ede0d4]">
@@ -29,12 +55,9 @@ const LoginForm = () => {
         <h2 className="text-3xl font-bold">Login</h2>
       </div>
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log(values);
-          navigate('/home'); // Adjust '/home' to the actual path where your home component is rendered
-        }}
+        onSubmit={handleSubmit}
       >
         {({ errors, touched }) => (
           <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
@@ -70,12 +93,13 @@ const LoginForm = () => {
               <ErrorMessage name="password" component="div" className="text-red-500 text-xs italic" />
             </div>
             <div className="flex items-center justify-between">
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit"
-              >
-                SIGN IN
-              </button>
+            <button
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+              disabled={isLoading} // Disable button during loading state
+            >
+              {isLoading ? 'Signing IN...' : 'SIGN IN'} {/* Button text based on loading state */}
+            </button>
 
               <Link
                 className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"

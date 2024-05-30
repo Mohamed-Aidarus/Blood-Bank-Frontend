@@ -10,81 +10,73 @@ import {
   FaHistory,
   FaWarehouse,
   FaPlusCircle,
-  FaHeart
-
+  FaHeart,
 } from "react-icons/fa";
 import { GiKnifeFork } from "react-icons/gi";
 
 function Sidebar({ children }) {
-  const [isOpen, SetIsOpen] = useState(false);
-  const toggle = () => SetIsOpen(!isOpen);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setIsOpen(!isOpen);
 
   // Custom Blood Donation Icon Component
   const BloodDonationIcon = () => {
     return (
       <>
         <FaHeart size={24} /> {/* Heart icon */}
-        <FaPlusCircle
-          size={24}
-          style={{ marginLeft: "-10px", marginTop: "-15px" }}
-        />{" "}
-        {/* Plus Circle icon */}
+        <FaPlusCircle size={24} style={{ marginLeft: "-10px", marginTop: "-15px" }} /> {/* Plus Circle icon */}
       </>
     );
   };
 
   const MenuItem = [
     {
-      path: "/home",
+      path: "home",
       name: "Home",
       icon: <FaHome />,
     },
     {
-      path: "/donor",
+      path: "donor",
       name: "Donor",
       icon: <FaUserPlus />,
     },
     {
-      path: "/patient",
+      path: "patient",
       name: "Patient",
       icon: <FaProcedures />,
     },
     {
-      path: "/donation",
+      path: "donation",
       name: "Donation",
       icon: <BloodDonationIcon />,
     },
     {
-      path: "/bloodRequest",
+      path: "bloodRequest",
       name: "Blood Requests",
       icon: <FaFileMedical />,
     },
     {
-      path: "/requestHistory",
+      path: "requestHistory",
       name: "Request History",
       icon: <FaHistory />,
     },
     {
-      path: "/bloodStock",
+      path: "bloodStock",
       name: "Blood Stock",
       icon: <FaWarehouse />,
     },
   ];
+
   return (
     <div>
       <header className="bg-[#ede0d4] shadow-md py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between">
           <div className="header-logo">
-            <Link to="/home" className="text-2xl font-bold text-red-500">
+            <Link to="home" className="text-2xl font-bold text-red-500">
               Blood Bank System
             </Link>
           </div>
           <div className="header-logout">
-            <Link
-              to="/"
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
+            <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium">
               Logout
             </Link>
           </div>
@@ -96,32 +88,23 @@ function Sidebar({ children }) {
             <h1 style={{ display: isOpen ? "block" : "none" }} className="logo">
               Dashboard
             </h1>
-            <div
-              style={{ marginLeft: isOpen ? "10px" : "6px" }}
-              className="bars"
-            >
+            <div style={{ marginLeft: isOpen ? "10px" : "6px" }} className="bars">
               <FaBars onClick={toggle} />
             </div>
           </div>
           {MenuItem.map((item, index) => (
-            // Hadii iconka lataabto ama magaca ama link laguyimaado asiga le raac
             <NavLink
               to={item.path}
               key={index}
-              className="link"
-              activeClassName="active"
+              className={({ isActive }) => (isActive ? "link active" : "link")}
             >
               <div className="icon">{item.icon}</div>
-              <div
-                style={{ display: isOpen ? "block" : "none" }}
-                className="linktext"
-              >
+              <div style={{ display: isOpen ? "block" : "none" }} className="linktext">
                 {item.name}
               </div>
             </NavLink>
           ))}
         </div>
-        {/* isku xiraha */}
         <main>{children}</main>
       </div>
     </div>
