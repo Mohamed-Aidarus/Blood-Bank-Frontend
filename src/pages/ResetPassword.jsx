@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useResetPasswordMutation } from '../store/api/UserSlice.js';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ClipLoader } from 'react-spinners'; // Import spinner component
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -32,66 +33,71 @@ function ResetPassword() {
       console.error("Error sending password reset email:", error);
       if (error.status === 404) {
         toast.error(error.data.message || "Email not found");
-        if (error.status === 400) {
-          toast.error(error.data.message || "Password and confirm password do not match");
+      } else if (error.status === 400) {
+        toast.error(error.data.message || "Password and confirm password do not match");
       } else {
         toast.error('Failed to reset password. Please try again.');
-      }}
+      }
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Formik
-        initialValues={{ password: '', passwordConfirm: '' }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ errors, touched }) => (
-          <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
-            <h1 className="text-red-500 font-bold text-2xl mb-4">Reset Password</h1>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2" htmlFor="password">
-                New Password
-              </label>
-              <Field
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.password && touched.password ? 'border-red-500' : ''
-                }`}
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your new password"
-              />
-              <ErrorMessage name="password" component="div" className="text-red-500 text-xs italic" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2" htmlFor="passwordConfirm">
-                Confirm New Password
-              </label>
-              <Field
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.passwordConfirm && touched.passwordConfirm ? 'border-red-500' : ''
-                }`}
-                id="passwordConfirm"
-                name="passwordConfirm"
-                type="password"
-                placeholder="Re-enter your new password"
-              />
-              <ErrorMessage name="passwordConfirm" component="div" className="text-red-500 text-xs italic" />
-            </div>
-            <div className="flex items-center justify-between">
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Resetting...' : 'Reset Password'}
-              </button>
-            </div>
-          </Form>
-        )}
-      </Formik>
+    <div className="flex justify-center items-center min-h-screen bg-[#ede0d4] p-4 sm:p-6 lg:p-8">
+      <ToastContainer />
+      <div className="w-full max-w-xs sm:max-w-md lg:max-w-lg">
+        <Formik
+          initialValues={{ password: '', passwordConfirm: '' }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ errors, touched }) => (
+            <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+              <h1 className="text-red-500 font-bold text-xl sm:text-2xl mb-4">Reset Password</h1>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="password">
+                  New Password
+                </label>
+                <Field
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.password && touched.password ? 'border-red-500' : ''
+                  }`}
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your new password"
+                  disabled={isLoading}
+                />
+                <ErrorMessage name="password" component="div" className="text-red-500 text-xs italic" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="passwordConfirm">
+                  Confirm New Password
+                </label>
+                <Field
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.passwordConfirm && touched.passwordConfirm ? 'border-red-500' : ''
+                  }`}
+                  id="passwordConfirm"
+                  name="passwordConfirm"
+                  type="password"
+                  placeholder="Re-enter your new password"
+                  disabled={isLoading}
+                />
+                <ErrorMessage name="passwordConfirm" component="div" className="text-red-500 text-xs italic" />
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 sm:px-8 lg:px-20 rounded focus:outline-none focus:shadow-outline"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? <ClipLoader size={20} color={"#fff"} loading={isLoading} /> : 'Reset Password'}
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 }

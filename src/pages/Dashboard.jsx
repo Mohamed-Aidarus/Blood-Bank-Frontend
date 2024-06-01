@@ -1,15 +1,16 @@
-// import React from 'react';
-// import { Outlet } from 'react-router-dom';
-// import Home from '../pages/Home.jsx';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Home from '../pages/Home.jsx';
+import Header from '../Component/Header.jsx';
 
-// const Dashboard = () => {
-//   return (
-//     <div>
-//       <Home>
-//         <Outlet />
-//       </Home>
-//     </div>
-//   );
-// };
+export default function Dashboard ()  {
+  return (
+    <div>
+    <Header />
+    <Outlet />
+  </div>
+  );
+};
 
-// export default Dashboard;
+
+

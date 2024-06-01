@@ -46,7 +46,7 @@ export const userSlice = createApi({
     updateUser: builder.mutation({
       query: (updatedUser) => ({
         url: `/`, // Adjust the endpoint if necessary
-        method: "PUT",
+        method: "PATCH",
         body: updatedUser,
       }),
       invalidatesTags: ["Users"],
@@ -54,9 +54,10 @@ export const userSlice = createApi({
 
     // Delete User
     deleteUser: builder.mutation({
-      query: (userId) => ({
-        url: `/${userId}`,
+      query: (email) => ({
+        url: `/`,
         method: "DELETE",
+        body: email,
       }),
       invalidatesTags: ["Users"],
     }),

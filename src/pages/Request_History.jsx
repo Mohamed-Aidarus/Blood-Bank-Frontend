@@ -14,7 +14,7 @@ const columns = [
   { field: 'requestTimestamp', headerName: 'Request Timestamp', width: 200 },
 ];
 
-const Request_History = () => {
+const RequestHistory = () => {
   const { data, error, isLoading } = useFetchBloodRequestsQuery();
   console.log(data);
 
@@ -43,4 +43,4 @@ const Request_History = () => {
   );
 };
 
-export default Request_History;
+export default RequestHistory;

@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { useAddUserMutation } from "../store/api/UserSlice.js"; // Import the hook
-import { toast } from "react-toastify"; // Import the toast library
+import { useAddUserMutation } from "../store/api/UserSlice.js";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const roles = ["Select role", "donor"];
+const roles = ["donor"];
 const medicalConditions = ["Select M.Conditions", "None", "Well"];
 const bloodGroups = [
   "Select bloodGroups",
@@ -20,15 +20,12 @@ const bloodGroups = [
   "O-",
 ];
 
-// Define a separate schema for password confirmation
 const passwordSchema = Yup.string().required("Password is required");
 
 const validationSchema = Yup.object({
   fullname: Yup.string().required("Fullname is required"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  role: Yup.string().oneOf(roles, "Role is required").required(),
+  email: Yup.string().email("Invalid email address").required("Email is required"),
+  role: Yup.string(),
   password: passwordSchema.min(8, "Password must be at least 8 characters"),
   passwordConfirm: Yup.string().test(
     "passwords-match",
@@ -43,42 +40,36 @@ const validationSchema = Yup.object({
     .integer("Age must be an integer")
     .min(21, "Age must be above 20")
     .required("Age is required"),
-  gender: Yup.mixed()
-    .oneOf(["Male", "Female"], "Invalid gender selected")
-    .required("Gender is required"),
-  bloodGroup: Yup.string()
-    .oneOf(bloodGroups, "Invalid blood group selected")
-    .required("Blood Group is required"),
+  gender: Yup.mixed().oneOf(["Male", "Female"], "Invalid gender selected").required("Gender is required"),
+  bloodGroup: Yup.string().oneOf(bloodGroups, "Invalid blood group selected").required("Blood Group is required"),
   address: Yup.string().required("Address is required"),
-  medicalCondition: Yup.string()
-    .oneOf(medicalConditions, "Invalid medical condition selected")
-    .required("Medical Condition is required"),
+  medicalCondition: Yup.string().oneOf(medicalConditions, "Invalid medical condition selected").required("Medical Condition is required"),
 });
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [addUser, { isLoading }] = useAddUserMutation();
+
   const handleSubmit = async (values) => {
     try {
-      // Execute the addUser mutation
       const response = await addUser(values).unwrap();
-      console.log(response); // Log response to console
-      toast.success("Registration successfully!"); // Display success toast
-      navigate("/"); // Redirect to login page after successful registration
+      console.log(response);
+      toast.success("Registration successfully!");
+      navigate("/");
     } catch (error) {
-      console.error("Error sending password reset email:", error);
+      console.error("Error during registration:", error);
       if (error.status === 400) {
         toast.error(error.data.message || "User already exists");
-        if (error.status === 400) {
-          toast.error(error.data.message || "Password and confirm password do not match");
       } else {
         toast.error("Registration failed. Please try again.");
-      }}
+      }
     }
   };
+
   const handleFocus = () => {
     document.getElementById("fullname").focus();
   };
+
   const initialValues = {
     fullname: "",
     email: "",
@@ -94,28 +85,24 @@ const RegisterForm = () => {
   };
 
   useEffect(() => {
-    // Automatically focus on the email field when the component mounts
     handleFocus();
   }, []);
+
   return (
-    <div className="flex justify-center items-center h-screen bg-[#ede0d4]">
+    <div className="flex justify-center items-center min-h-screen bg-[#ede0d4]">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ errors, touched }) => (
-          <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+          <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-4xl">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-red-500">Register</h2>
             </div>
-            <div className="grid-container">
-              {/* Fullname */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="fullname"
-                >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="fullname">
                   Full Name
                 </label>
                 <Field
@@ -126,18 +113,10 @@ const RegisterForm = () => {
                   name="fullname"
                   type="text"
                 />
-                <ErrorMessage
-                  name="fullname"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="fullname" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Email */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="email"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="email">
                   Email
                 </label>
                 <Field
@@ -148,49 +127,30 @@ const RegisterForm = () => {
                   name="email"
                   type="email"
                 />
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="email" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Role */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="role"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="role">
                   Role
                 </label>
-                <Field name="role">
-                  {({ field }) => (
-                    <select
-                      {...field}
-                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                        errors.role && touched.role ? "border-red-500" : ""
-                      }`}
-                      id="role"
-                    >
-                      {roles.map((role) => (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </Field>
-                <ErrorMessage
+                <Field
                   name="role"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-              {/* Password */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="password"
+                  as="select"
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.role && touched.role ? "border-red-500" : ""
+                  }`}
+                  id="role"
                 >
+                  {roles.map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="role" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="password">
                   Password
                 </label>
                 <Field
@@ -201,42 +161,24 @@ const RegisterForm = () => {
                   name="password"
                   type="password"
                 />
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="password" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Password Confirm */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="passwordConfirm"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="passwordConfirm">
                   Confirm Password
                 </label>
                 <Field
                   className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                    errors.passwordConfirm && touched.passwordConfirm
-                      ? "border-red-500"
-                      : ""
+                    errors.passwordConfirm && touched.passwordConfirm ? "border-red-500" : ""
                   }`}
                   id="passwordConfirm"
                   name="passwordConfirm"
                   type="password"
                 />
-                <ErrorMessage
-                  name="passwordConfirm"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="passwordConfirm" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Age */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="age"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="age">
                   Age
                 </label>
                 <Field
@@ -247,80 +189,48 @@ const RegisterForm = () => {
                   name="age"
                   type="number"
                 />
-                <ErrorMessage
-                  name="age"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="age" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Gender */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="gender"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="gender">
                   Gender
                 </label>
-                <Field name="gender">
-                  {({ field }) => (
-                    <select
-                      {...field}
-                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                        errors.gender && touched.gender ? "border-red-500" : ""
-                      }`}
-                      id="gender"
-                    >
-                      <option value="">Select gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  )}
-                </Field>
-                <ErrorMessage
+                <Field
                   name="gender"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-              {/* Blood Group */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="bloodGroup"
+                  as="select"
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.gender && touched.gender ? "border-red-500" : ""
+                  }`}
+                  id="gender"
                 >
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </Field>
+                <ErrorMessage name="gender" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="bloodGroup">
                   Blood Group
                 </label>
-                <Field name="bloodGroup">
-                  {({ field }) => (
-                    <select
-                      {...field}
-                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                        errors.bloodGroup && touched.bloodGroup
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      id="bloodGroup"
-                    >
-                      {bloodGroups.map((group) => (
-                        <option key={group} value={group}>
-                          {group}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </Field>
-                <ErrorMessage
+                <Field
                   name="bloodGroup"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-              {/* Address */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="address"
+                  as="select"
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.bloodGroup && touched.bloodGroup ? "border-red-500" : ""
+                  }`}
+                  id="bloodGroup"
                 >
+                  {bloodGroups.map((group) => (
+                    <option key={group} value={group}>
+                      {group}
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="bloodGroup" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="address">
                   Address
                 </label>
                 <Field
@@ -331,54 +241,36 @@ const RegisterForm = () => {
                   name="address"
                   type="text"
                 />
-                <ErrorMessage
-                  name="address"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                <ErrorMessage name="address" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              {/* Medical Condition */}
-              <div className="grid-item mb-4">
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="medicalCondition"
-                >
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="medicalCondition">
                   Medical Condition
                 </label>
-                <Field name="medicalCondition">
-                  {({ field }) => (
-                    <select
-                      {...field}
-                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                        errors.medicalCondition && touched.medicalCondition
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      id="medicalCondition"
-                    >
-                      {medicalConditions.map((condition) => (
-                        <option key={condition} value={condition}>
-                          {condition}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </Field>
-                <ErrorMessage
+                <Field
                   name="medicalCondition"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
+                  as="select"
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.medicalCondition && touched.medicalCondition ? "border-red-500" : ""
+                  }`}
+                  id="medicalCondition"
+                >
+                  {medicalConditions.map((condition) => (
+                    <option key={condition} value={condition}>
+                      {condition}
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="medicalCondition" component="div" className="text-red-500 text-xs mt-1" />
               </div>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-6">
               <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
-                disabled={isLoading} // Disable button during loading state
+                disabled={isLoading}
               >
-                {isLoading ? "Signing up..." : "SIGN UP"}{" "}
-                {/* Button text based on loading state */}
+                {isLoading ? "Signing up..." : "SIGN UP"}
               </button>
             </div>
             <div className="mt-4 text-center">
@@ -395,4 +287,5 @@ const RegisterForm = () => {
     </div>
   );
 };
+
 export default RegisterForm;
