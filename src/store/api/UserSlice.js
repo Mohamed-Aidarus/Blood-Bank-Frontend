@@ -21,13 +21,6 @@ export const userSlice = createApi({
     }),
 
     // // Fetch Single User
-    // fetchUserByEmail: builder.query({
-    //   query: (email) => ({
-    //     url: `/login/${email}`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["Users"],
-    // }),
 
     // Add User
     addUser: builder.mutation({
@@ -51,8 +44,8 @@ export const userSlice = createApi({
 
     // Update User
     updateUser: builder.mutation({
-      query: ({ userId, updatedUser }) => ({
-        url: `/${userId}`,
+      query: (updatedUser) => ({
+        url: `/`, // Adjust the endpoint if necessary
         method: "PUT",
         body: updatedUser,
       }),
@@ -90,7 +83,7 @@ export const userSlice = createApi({
     // Reset Password
     // Reset Password
     resetPassword: builder.mutation({
-      query: ({ email , password, passwordConfirm }) => ({
+      query: ({ email, password, passwordConfirm }) => ({
         url: "/resetPassword",
         method: "POST",
         body: { email, password, passwordConfirm },

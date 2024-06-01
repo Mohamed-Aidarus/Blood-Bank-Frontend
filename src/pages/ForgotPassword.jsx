@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForgotPasswordMutation } from '../store/api/UserSlice.js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -52,6 +52,9 @@ const ForgotPassword = () => {
           >
             {isLoading ? 'Sending...' : 'Send Reset Link'}
           </button>
+          <Link className="text-blue-500 hover:text-blue-800" to="/">
+                  Back to Login{" "}
+                </Link>
         </div>
       </form>
     </div>

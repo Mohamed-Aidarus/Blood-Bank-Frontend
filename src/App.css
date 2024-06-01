@@ -8,7 +8,35 @@
     grid-template-columns: 1fr 1fr; /* Creates two equal-width columns */
     gap: 20px; /* Space between grid items */
   }
-  
+  /* Sidebar styles */
+.sidebar {
+  background-color:  #6a040f;;
+  color: white;
+  border-bottom: 3px;
+  width: 200px;
+  height: 93vh;
+  transition: all 0.5s;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  padding: 20px 20px;
+  gap: 20px;
+  transition: all 0.5s;
+}
+
+.link .icon {
+  min-width: 30px;
+}
+
+.link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+/* Sidebar styles */
   
   .container {
     display: flex;

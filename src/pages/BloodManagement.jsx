@@ -1,0 +1,487 @@
+import React, { useEffect, useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Link, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+
+import {useCreateDonationMutation} from "../store/api/DonationSlice.js" ;
+import {useCreateBloodRequestMutation} from "../store/api/BloodRequestSlicer.js"
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const medicalConditions = ["Select M.Conditions", "None", "Sick", "Well", "Diabetes", "Covid-19"];
+const disease = ["Select disease","Well",  "None", "Covid-19", "Hepatitis", "Diabetes"];
+const bloodGroups = [
+  "Select bloodGroups",
+  "A+",
+  "B+",
+  "AB+",
+  "O+",
+  "A-",
+  "B-",
+  "AB-",
+  "O-",
+];
+
+
+
+const BloodManagement = () => {
+  const navigate = useNavigate();
+  const [formType, setFormType] = useState("Donation"); // State to toggle between forms
+
+  const [Donation, { isLoading: isLoadingDonation }] = useCreateDonationMutation();
+  const [Request, { isLoading: isLoadingRequest }] = useCreateBloodRequestMutation();
+
+
+
+  const handleRequestSubmit = async (values) => {
+    try {
+      const response = await Request(values).unwrap();
+      console.log(response); // Display response in console
+      toast.success("Blood request created successfully!");
+    } catch (error) {
+      console.error("Error Requesting Blood :", error);
+      if (error.status === 400) {
+        toast.error(error.data.message || "Error Requesting Blood");
+      } else {
+        toast.error("Blood request failed. Please check the details.");
+      }
+    }
+  };
+  const handleDonationSubmit = async (values) => {
+    try {
+      const response = await Donation(values).unwrap();
+      console.log(response); // Display response in console
+      toast.success("Donation created successfully!");
+    } catch (error) {
+      console.error("Error Creating  Donation :", error);
+      if (error.status === 400) {
+        toast.error(error.data.message || "Error Creating Donation");
+      } else {
+        toast.error("Donation Creating failed. Please check the details.");
+      }
+    }
+  };
+
+ 
+  
+
+  useEffect(() => {
+    document.getElementById("fullname")?.focus();
+  }, []);
+
+  const initialValuesDonation = {
+    fullname: "",
+    bloodGroup: bloodGroups[0],
+    age: "",
+    unit: "",
+    disease: disease[0],
+  };
+  const initialValuesBloodRequest = {
+    fullname: "",
+    age: "",
+    gender: "",
+    bloodGroup: bloodGroups[0],
+    medicalCondition: medicalConditions[0],
+    unit: "",
+  };
+
+
+  const validationSchemaDonation = Yup.object({
+    fullname: Yup.string().required("Full name is required"),
+    bloodGroup: Yup.string()
+    .oneOf(bloodGroups, "Invalid blood group selected")
+    .required("Blood Group is required"),
+    unit: Yup.number()
+      .required("Unit is required")
+      .positive("Unit must be a positive number"),
+      age: Yup.number()
+      .positive("Age must be positive")
+      .integer("Age must be an integer")
+      .min(20, "Age must be above 20")
+      .required("Age is required"),
+      disease: Yup.string()
+      .oneOf(disease, "Invalid medical condition selected")
+      .required("Medical Condition is required"),
+  });
+  const validationSchemaBloodRequest = Yup.object({
+    fullname: Yup.string().required("Full name is required"),
+    age: Yup.number()
+      .required("Age is required")
+      .positive("Age must be a positive number"),
+      gender: Yup.mixed()
+      .oneOf(["Male", "Female"], "Invalid gender selected")
+      .required("Gender is required"),
+      bloodGroup: Yup.string()
+      .oneOf(bloodGroups, "Invalid blood group selected")
+      .required("Blood Group is required"),
+      medicalCondition: Yup.string()
+      .oneOf(medicalConditions, "Invalid medical condition selected")
+      .required("Medical Condition is required"),
+    unit: Yup.number()
+      .required("Unit is required")
+      .positive("Unit must be a positive number"),
+  });
+
+  return (
+    <div className="flex justify-center items-center h-screen bg-[#ede0d4]">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-4">
+          <button
+            className="mr-2 px-4 py-2 bg-blue-500 text-white rounded"
+            onClick={() => setFormType("Donation")}
+          >
+            Donation
+          </button>
+          <button
+            className="mr-2 px-4 py-2 bg-green-500 text-white rounded"
+            onClick={() => setFormType("request")}
+          >
+            Blood Request
+          </button>
+        </div>
+        {formType === "Donation" && (
+          <Formik
+            initialValues={initialValuesDonation}
+            validationSchema={validationSchemaDonation}
+            onSubmit={handleDonationSubmit}
+          >
+            {({ errors, touched }) => (
+              <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="fullname"
+                  >
+                    Full Name
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.fullname && touched.fullname
+                        ? "border-red-500"
+                        : ""
+                    }`}
+                    id="fullname"
+                    name="fullname"
+                    type="text"
+                    placeholder="Enter your full name"
+                  />
+                  <ErrorMessage
+                    name="fullname"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="age"
+                  >
+                    Age
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.age && touched.age ? "border-red-500" : ""
+                    }`}
+                    id="age"
+                    name="age"
+                    type="number"
+                    placeholder="Enter your age"
+                  />
+                  <ErrorMessage
+                    name="age"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="bloodGroup"
+                  >
+                    Blood Group
+                  </label>
+                  <Field name="bloodGroup">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                            errors.bloodGroup && touched.bloodGroup
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          id="bloodGroup"
+                        >
+                          {bloodGroups.map((group) => (
+                            <option key={group} value={group}>
+                              {group}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  <ErrorMessage
+                    name="bloodGroup"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="unit"
+                  >
+                    Unit
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.unit && touched.unit ? "border-red-500" : ""
+                    }`}
+                    id="unit"
+                    name="unit"
+                    type="number"
+                    placeholder="Enter the unit"
+                  />
+                  <ErrorMessage
+                    name="unit"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="disease"
+                  >
+                    Disease
+                  </label>
+                  <Field name="medicalCondition">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                            errors.disease && touched.disease
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          id="medicalCondition"
+                        >
+                          {disease.map((condition) => (
+                            <option key={condition} value={condition}>
+                              {condition}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  <ErrorMessage
+                    name="disease"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
+                    type="submit"
+                    disabled={isLoadingDonation} // Disable button during loading state
+                  >
+                    {isLoadingDonation ? "Donating..." : "DONATE"}{" "}
+                    {/* Button text based on loading state */}
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        )}
+        ;
+        {formType === "request" && (
+          <Formik
+            initialValues={initialValuesBloodRequest}
+            validationSchema={validationSchemaBloodRequest}
+            onSubmit={handleRequestSubmit}
+          >
+            {({ errors, touched }) => (
+              <Form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="fullname"
+                  >
+                    Full Name
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.fullname && touched.fullname
+                        ? "border-red-500"
+                        : ""
+                    }`}
+                    id="fullname"
+                    name="fullname"
+                    type="text"
+                    placeholder="Enter your full name"
+                  />
+                  <ErrorMessage
+                    name="fullname"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="age"
+                  >
+                    Age
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.age && touched.age ? "border-red-500" : ""
+                    }`}
+                    id="age"
+                    name="age"
+                    type="number"
+                    placeholder="Enter your age"
+                  />
+                  <ErrorMessage
+                    name="age"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="gender"
+                  >
+                    Gender
+                  </label>
+                  <Field name="gender">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                            errors.gender && touched.gender
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          id="gender"
+                        >
+                          <option value="">Select gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                      )}
+                    </Field>
+                  <ErrorMessage
+                    name="gender"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="bloodGroup"
+                  >
+                    Blood Group
+                  </label>
+                  <Field name="bloodGroup">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                            errors.bloodGroup && touched.bloodGroup
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          id="bloodGroup"
+                        >
+                          {bloodGroups.map((group) => (
+                            <option key={group} value={group}>
+                              {group}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  <ErrorMessage
+                    name="bloodGroup"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="medicalCondition"
+                  >
+                    Medical Condition
+                  </label>
+                  <Field name="medicalCondition">
+                      {({ field }) => (
+                        <select
+                          {...field}
+                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                            errors.medicalCondition && touched.medicalCondition
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          id="medicalCondition"
+                        >
+                          {medicalConditions.map((condition) => (
+                            <option key={condition} value={condition}>
+                              {condition}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  <ErrorMessage
+                    name="medicalCondition"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 font-bold mb-2"
+                    htmlFor="unit"
+                  >
+                    Unit
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.unit && touched.unit ? "border-red-500" : ""
+                    }`}
+                    id="unit"
+                    name="unit"
+                    type="number"
+                    placeholder="Enter the unit"
+                  />
+                  <ErrorMessage
+                    name="unit"
+                    component="div"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
+                    type="submit"
+                    disabled={isLoadingRequest} // Disable button during loading state
+                  >
+                    {isLoadingRequest ? "Requesting..." : "REQUEST"}{" "}
+                    {/* Button text based on loading state */}
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        )}
+        ;
+      </div>
+    </div>
+  );
+};
+
+export default BloodManagement;

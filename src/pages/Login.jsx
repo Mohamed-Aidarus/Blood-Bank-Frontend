@@ -18,14 +18,12 @@ const LoginForm = () => {
     password: Yup.string().required('Password is required'),
   });
 
-  // Function to set focus on the email field
   const handleFocus = () => {
     document.getElementById("email").focus();
   };
   
   const initialValues = { email: '', password: '' }
   useEffect(() => {
-    // Automatically focus on the email field when the component mounts
     handleFocus();
   }, []);
 
@@ -34,22 +32,23 @@ const LoginForm = () => {
       const response = await loginUser(values).unwrap();
       console.log(response); // Display response in console
       toast.success('Login successful!');
-      login(); // Update authentication state
-      navigate('/app'); // Adjust '/home' to the actual path where your home component is rendered
-    }catch (error) {
-      console.error("Error sending password reset email:", error);
+      login(response.data.role); // Pass the user role to the login function
+      navigate('/home'); // Adjust '/dashboard' to the actual path where your dashboard component is rendered
+    } catch (error) {
+      console.error("Error during login:", error);
       if (error.status === 404) {
         toast.error(error.data.message || "Email not found");
-        if (error.status === 400) {
-          toast.error(error.data.message || "Invalid password");
+      } else if (error.status === 400) {
+        toast.error(error.data.message || "Invalid password");
       } else {
         toast.error('Login failed. Please check your credentials.');
-      }}
+      }
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-[#ede0d4]">
+      <ToastContainer />
       <div className="text-center mb-8">
         <img src={logo} alt="Logo" className="mx-auto mb-4 w-32 h-32" />
         <h2 className="text-3xl font-bold">Login</h2>
@@ -68,7 +67,7 @@ const LoginForm = () => {
               </label>
               <Field
                 className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  ${
-                  errors.email && touched.email? 'border-red-500' : ''
+                  errors.email && touched.email ? 'border-red-500' : ''
                 }`}
                 id="email"
                 name="email"
@@ -83,7 +82,7 @@ const LoginForm = () => {
               </label>
               <Field
                 className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.password && touched.password? 'border-red-500' : ''
+                  errors.password && touched.password ? 'border-red-500' : ''
                 }`}
                 id="password"
                 name="password"
@@ -93,14 +92,13 @@ const LoginForm = () => {
               <ErrorMessage name="password" component="div" className="text-red-500 text-xs italic" />
             </div>
             <div className="flex items-center justify-between">
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-              disabled={isLoading} // Disable button during loading state
-            >
-              {isLoading ? 'Signing IN...' : 'SIGN IN'} {/* Button text based on loading state */}
-            </button>
-
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-20 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Signing IN...' : 'SIGN IN'}
+              </button>
               <Link
                 className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
                 to="/ForgotPassword"

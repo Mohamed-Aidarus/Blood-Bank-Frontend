@@ -6,7 +6,7 @@ import { useAddUserMutation } from "../store/api/UserSlice.js"; // Import the ho
 import { toast } from "react-toastify"; // Import the toast library
 import "react-toastify/dist/ReactToastify.css";
 
-const roles = ["Select role", "donor", "recipient"];
+const roles = ["Select role", "donor"];
 const medicalConditions = ["Select M.Conditions", "None", "Well"];
 const bloodGroups = [
   "Select bloodGroups",
