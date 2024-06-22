@@ -19,12 +19,6 @@ const EmailSent = () => {
         <h2 className="text-xl sm:text-2xl font-medium mb-4">Email Sent</h2>
         <p className="text-gray-500 mb-6">
           A link to reset your password has been sent to {email || 'your email address'}.
-          You can also use the link below to reset your password.
-        </p>
-        <p>
-          <a href={`/ResetPassword?email=${encodeURIComponent(email)}`} className="text-blue-500 underline">
-            Reset Password
-          </a>
         </p>
         <button
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"

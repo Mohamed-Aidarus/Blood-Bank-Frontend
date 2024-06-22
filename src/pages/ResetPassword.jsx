@@ -1,3 +1,4 @@
+// ResetPassword.jsx
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -5,12 +6,12 @@ import * as Yup from 'yup';
 import { useResetPasswordMutation } from '../store/api/UserSlice.js';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ClipLoader } from 'react-spinners'; // Import spinner component
+import { ClipLoader } from 'react-spinners';
 
 function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const email = searchParams.get('email');
+  const token = searchParams.get('token');
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const validationSchema = Yup.object({
@@ -25,14 +26,14 @@ function ResetPassword() {
   const handleSubmit = async (values) => {
     try {
       console.log('Submitting values:', values);
-      const response = await resetPassword({ email, password: values.password, passwordConfirm: values.passwordConfirm }).unwrap();
+      const response = await resetPassword({ token, password: values.password, passwordConfirm: values.passwordConfirm }).unwrap();
       console.log('API Response:', response);
       toast.success('Password reset successfully!');
       navigate('/PasswordResetConfirmation');
     } catch (error) {
-      console.error("Error sending password reset email:", error);
+      console.error("Error resetting password:", error);
       if (error.status === 404) {
-        toast.error(error.data.message || "Email not found");
+        toast.error(error.data.message || "Invalid or expired token");
       } else if (error.status === 400) {
         toast.error(error.data.message || "Password and confirm password do not match");
       } else {

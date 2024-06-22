@@ -20,8 +20,6 @@ export const userSlice = createApi({
       providesTags: ["Users"],
     }),
 
-    // // Fetch Single User
-
     // Add User
     addUser: builder.mutation({
       query: (newUser) => ({
@@ -54,10 +52,9 @@ export const userSlice = createApi({
 
     // Delete User
     deleteUser: builder.mutation({
-      query: (email) => ({
-        url: `/`,
-        method: "DELETE",
-        body: email,
+      query: (id) => ({
+        url: `/${id}`,
+        method: 'DELETE',
       }),
       invalidatesTags: ["Users"],
     }),
@@ -77,17 +74,16 @@ export const userSlice = createApi({
       query: (email) => ({
         url: "/forgotPassword",
         method: "POST",
-        body: email,
+        body:  email ,
       }),
     }),
-    // Reset Password
-    // Reset Password
+
     // Reset Password
     resetPassword: builder.mutation({
-      query: ({ email, password, passwordConfirm }) => ({
-        url: "/resetPassword",
+      query: ({ token, password, passwordConfirm }) => ({
+        url: `/ResetPassword/${token}`,
         method: "POST",
-        body: { email, password, passwordConfirm },
+        body: { password, passwordConfirm },
       }),
     }),
   }),
@@ -96,7 +92,6 @@ export const userSlice = createApi({
 export const {
   useResetPasswordMutation,
   useFetchUsersQuery,
-  //   useFetchUserByEmailQuery,
   useAddUserMutation,
   useAddUsersMutation,
   useUpdateUserMutation,
@@ -104,5 +99,5 @@ export const {
   useLoginUserMutation,
   useForgotPasswordMutation,
 } = userSlice;
-console.log(userSlice);
+
 export default userSlice.reducer;
