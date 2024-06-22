@@ -27,11 +27,21 @@ export const bloodRequestSlice = createApi({
       }),
       invalidatesTags: ["BloodRequests"],
     }),
+
+    // Delete Blood Request
+    deleteBloodRequest: builder.mutation({
+      query: (id) => ({
+        url: `/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["BloodRequests"],
+    }),
   }),
 });
 
 export const {
   useFetchBloodRequestsQuery,
   useCreateBloodRequestMutation,
+  useDeleteBloodRequestMutation,
 } = bloodRequestSlice;
 export default bloodRequestSlice.reducer;

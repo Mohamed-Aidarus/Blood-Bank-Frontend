@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import {useCreateDonationMutation} from "../store/api/DonationSlice.js" ;
 import {useCreateBloodRequestMutation} from "../store/api/BloodRequestSlicer.js"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClipLoader } from "react-spinners"; // Import spinner component
+import { ClipLoader } from "react-spinners";
 
 const medicalConditions = [
   "Select M.Conditions",
@@ -16,6 +15,7 @@ const medicalConditions = [
   "Diabetes",
   "Covid-19",
 ];
+
 const disease = [
   "Select disease",
   "Well",
@@ -24,6 +24,7 @@ const disease = [
   "Hepatitis",
   "Diabetes",
 ];
+
 const bloodGroups = [
   "Select bloodGroups",
   "A+",
@@ -36,40 +37,30 @@ const bloodGroups = [
   "O-",
 ];
 
-const BloodManagement = () => {
-  const navigate = useNavigate();
-  const [formType, setFormType] = useState("Donation"); // State to toggle between forms
+const BloodManagement = ({ refetchBloodCounts }) => {
+  const [formType, setFormType] = useState("Donation");
 
-  const [Donation, { isLoading: isLoadingDonation }] = useCreateDonationMutation();
-  const [Request, { isLoading: isLoadingRequest }] = useCreateBloodRequestMutation();
-
-  const handleRequestSubmit = async (values) => {
-    try {
-      const response = await Request(values).unwrap();
-      console.log(response); // Display response in console
-      toast.success("Blood request created successfully!");
-    } catch (error) {
-      console.error("Error Requesting Blood :", error);
-      if (error.status === 400) {
-        toast.error(error.data.message || "Error Requesting Blood");
-      } else {
-        toast.error("Blood request failed. Please check the details.");
-      }
-    }
-  };
+  const [createDonation, { isLoading: isLoadingDonation }] = useCreateDonationMutation();
+  const [createBloodRequest, { isLoading: isLoadingRequest }] = useCreateBloodRequestMutation();
 
   const handleDonationSubmit = async (values) => {
     try {
-      const response = await Donation(values).unwrap();
-      console.log(response); // Display response in console
+      await createDonation(values).unwrap();
       toast.success("Donation created successfully!");
+      refetchBloodCounts(); // Refetch blood counts after donation
     } catch (error) {
-      console.error("Error Creating  Donation :", error);
-      if (error.status === 400) {
-        toast.error(error.data.message || "Error Creating Donation");
-      } else {
-        toast.error("Donation Creating failed. Please check the details.");
-      }
+      console.error("Error Creating Donation:", error);
+      toast.error(error.data.message || "Donation Creating failed. Please check the details.");
+    }
+  };
+
+  const handleRequestSubmit = async (values) => {
+    try {
+      await createBloodRequest(values).unwrap();
+      toast.success("Blood request created successfully!");
+    } catch (error) {
+      console.error("Error Requesting Blood:", error);
+      toast.error(error.data.message || "Blood request failed. Please check the details.");
     }
   };
 
@@ -173,21 +164,6 @@ const BloodManagement = () => {
                   <ErrorMessage name="fullname" component="div" className="text-red-500 text-xs italic" />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2" htmlFor="age">
-                    Age
-                  </label>
-                  <Field
-                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                      errors.age && touched.age ? "border-red-500" : ""
-                    }`}
-                    id="age"
-                    name="age"
-                    type="number"
-                    placeholder="Enter your age"
-                  />
-                  <ErrorMessage name="age" component="div" className="text-red-500 text-xs italic" />
-                </div>
-                <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2" htmlFor="bloodGroup">
                     Blood Group
                   </label>
@@ -204,6 +180,21 @@ const BloodManagement = () => {
                     ))}
                   </Field>
                   <ErrorMessage name="bloodGroup" component="div" className="text-red-500 text-xs italic" />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2" htmlFor="age">
+                    Age
+                  </label>
+                  <Field
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.age && touched.age ? "border-red-500" : ""
+                    }`}
+                    id="age"
+                    name="age"
+                    type="number"
+                    placeholder="Enter your age"
+                  />
+                  <ErrorMessage name="age" component="div" className="text-red-500 text-xs italic" />
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2" htmlFor="unit">
@@ -230,9 +221,9 @@ const BloodManagement = () => {
                     }`}
                     id="disease"
                   >
-                    {disease.map((condition) => (
-                      <option key={condition} value={condition}>
-                        {condition}
+                    {disease.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
                       </option>
                     ))}
                   </Field>

@@ -32,11 +32,11 @@ function App() {
           <Route path="/PasswordResetConfirmation" element={<PasswordResetConfirmation />} />
           <Route path="/not-authorized" element={<NotAuthorized />} />
           <Route path="/Dashboard/*"element={
-              <ProtectedRoute allowedRoles={['admin', 'donor']}>
+              <ProtectedRoute allowedRoles={['admin', 'user']}>
                 <Dashboard />
               </ProtectedRoute>}>
             <Route path="home"element={
-                <ProtectedRoute allowedRoles={['admin', 'donor']}>
+                <ProtectedRoute allowedRoles={['admin', 'user']}>
                   <Home />
                 </ProtectedRoute>
               } />
@@ -46,16 +46,16 @@ function App() {
                 </ProtectedRoute>
               } />
             <Route path="donationHistory" element={
-                <ProtectedRoute allowedRoles={['admin', 'donor']}>
+                <ProtectedRoute allowedRoles={['admin', 'user']}>
                   <DonationHistory />
                 </ProtectedRoute>
               }/>
             <Route path="requestHistory" element={
-                <ProtectedRoute allowedRoles={['admin', 'donor']}>
+                <ProtectedRoute allowedRoles={['admin', 'user']}>
                   <RequestHistory />
                 </ProtectedRoute>} />
             <Route path="BloodManagement" element={
-                <ProtectedRoute allowedRoles={['donor']}>
+                <ProtectedRoute allowedRoles={['user']}>
                   <BloodManagement />
                 </ProtectedRoute>
               } />

@@ -27,11 +27,21 @@ export const donationSlice = createApi({
       }),
       invalidatesTags: ['Donations'],
     }),
+
+    // Delete Donation
+    deleteDonation: builder.mutation({
+      query: (id) => ({
+        url: `/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Donations'],
+    }),
   }),
 });
 
 export const {
   useFetchDonationsQuery,
   useCreateDonationMutation,
+  useDeleteDonationMutation,
 } = donationSlice;
 export default donationSlice.reducer;
