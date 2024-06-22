@@ -55,7 +55,7 @@ function App() {
                   <RequestHistory />
                 </ProtectedRoute>} />
             <Route path="BloodManagement" element={
-                <ProtectedRoute allowedRoles={['user']}>
+                <ProtectedRoute allowedRoles={['admin', 'user']}>
                   <BloodManagement />
                 </ProtectedRoute>
               } />
