@@ -1,17 +1,18 @@
 import React from 'react';
-import { useFetchUsersQuery,useDeleteUserMutation} from '../store/api/UserSlice.js';
+import { useFetchUsersQuery, useDeleteUserMutation } from '../store/api/UserSlice.js';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { CircularProgress } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaTrash } from 'react-icons/fa';
 import { useAuth } from '../Component/AuthProvider.jsx'; // Adjust the import path as necessary
+import { Box, Typography } from '@mui/material';
 
 const columns = (handleDelete, userRole) => [
   { field: 'id', headerName: 'ID', width: 90 },
   { field: 'fullname', headerName: 'Full Name', width: 150 },
   { field: 'role', headerName: 'Role', width: 130 },
-  { field: 'email', headerName: 'Email', width: 130 },
+  { field: 'email', headerName: 'Email', width: 200 },
   userRole === 'admin' && {
     field: 'actions',
     headerName: 'Actions',
@@ -62,14 +63,12 @@ const UserManagement = () => {
     );
   }
 
-  const user = data?.data ?? [];
-  const rows = user.map((user, index) => ({
+  const users = data?.data ?? [];
+  const rows = users.map((user) => ({
     id: user._id, // Ensure this matches your backend ID field
     fullname: user.fullname,
     role: user.role,
     email: user.email,
-   
-
   }));
 
   return (

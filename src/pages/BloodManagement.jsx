@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import {useCreateDonationMutation} from "../store/api/DonationSlice.js" ;
-import {useCreateBloodRequestMutation} from "../store/api/BloodRequestSlicer.js"
+import { useCreateDonationMutation } from "../store/api/DonationSlice.js";
+// import {useCreateBloodRequestMutation } from "../store/api/BloodRequestSlice.js"; // Corrected import statement
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const medicalConditions = [
   "Select M.Conditions",
@@ -50,7 +50,7 @@ const BloodManagement = ({ refetchBloodCounts }) => {
       refetchBloodCounts(); // Refetch blood counts after donation
     } catch (error) {
       console.error("Error Creating Donation:", error);
-      toast.error(error.data.message || "Donation Creating failed. Please check the details.");
+      toast.error(error.data.message || "Donation creation failed. Please check the details.");
     }
   };
 
@@ -88,7 +88,7 @@ const BloodManagement = ({ refetchBloodCounts }) => {
   const validationSchemaDonation = Yup.object({
     fullname: Yup.string().required("Full name is required"),
     bloodGroup: Yup.string()
-      .oneOf(bloodGroups, "Invalid blood group selected")
+      .oneOf(bloodGroups.slice(1), "Invalid blood group selected")
       .required("Blood Group is required"),
     unit: Yup.number()
       .required("Unit is required")
@@ -99,7 +99,7 @@ const BloodManagement = ({ refetchBloodCounts }) => {
       .min(20, "Age must be above 20")
       .required("Age is required"),
     disease: Yup.string()
-      .oneOf(disease, "Invalid disease selected")
+      .oneOf(disease.slice(1), "Invalid disease selected")
       .required("Disease is required"),
   });
 
@@ -108,14 +108,14 @@ const BloodManagement = ({ refetchBloodCounts }) => {
     age: Yup.number()
       .required("Age is required")
       .positive("Age must be a positive number"),
-    gender: Yup.mixed()
+    gender: Yup.string()
       .oneOf(["Male", "Female"], "Invalid gender selected")
       .required("Gender is required"),
     bloodGroup: Yup.string()
-      .oneOf(bloodGroups, "Invalid blood group selected")
+      .oneOf(bloodGroups.slice(1), "Invalid blood group selected")
       .required("Blood Group is required"),
     medicalCondition: Yup.string()
-      .oneOf(medicalConditions, "Invalid medical condition selected")
+      .oneOf(medicalConditions.slice(1), "Invalid medical condition selected")
       .required("Medical Condition is required"),
     unit: Yup.number()
       .required("Unit is required")

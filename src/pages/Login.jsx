@@ -22,7 +22,7 @@ const LoginForm = () => {
   const handleFocus = () => {
     document.getElementById("email").focus();
   };
-  
+
   const initialValues = { email: '', password: '' }
   useEffect(() => {
     handleFocus();
@@ -31,9 +31,11 @@ const LoginForm = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await loginUser(values).unwrap();
+      const { token, user_data } = response;
       console.log(response); // Display response in console
       toast.success('Login successful!');
-      login(response.data.role); // Pass the user role to the login function
+      localStorage.setItem('user', JSON.stringify(user_data)); 
+      login(user_data.role, token); // Pass the user role and token to the login function
       navigate('/Dashboard/home'); // Adjust '/dashboard' to the actual path where your dashboard component is rendered
     } catch (error) {
       console.error("Error during login:", error);
